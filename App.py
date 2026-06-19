@@ -4,7 +4,6 @@ from pathlib import Path
 from langchain.agents import create_sql_agent
 from langchain.sql_database import SQLDatabase
 from langchain.agents.agent_types import AgentType
-from langchain_core.prompts import ChatPromptTemplate
 from langchain.callbacks import StreamlitCallbackHandler
 from langchain.agents.agent_toolkits import SQLDatabaseToolkit
 from urllib.parse import quote_plus
@@ -32,7 +31,7 @@ if not db_uri:
     st.info("Please enter the database information and uri")
 if not api_key:
     st.info("Please add the groq api key")
-## LLM model
+# LLM model
 llm=ChatGroq(groq_api_key=api_key,model_name="llama-3.1-8b-instant",streaming=True)
 @st.cache_resource(ttl="2h")
 def configure_db(db_uri,mysql_host=None,mysql_user=None,mysql_password=None,mysql_db=None):
@@ -52,22 +51,20 @@ else:
     db=configure_db(db_uri)
 # Toolkit
 toolkit=SQLDatabaseToolkit(db=db,llm=llm)
-system_prompt = """
-You are a highly accurate SQL assistant integrated into a chat application.
-Your task is to understand user questions and generate correct SQL queries based on the given database schema, then provide clear answers from the results.
-Rules you MUST follow:
-- Always generate valid SQL queries compatible with the database.
-- Use ONLY the provided database schema do not assume extra tables or columns.
-- Prefer simple, optimized queries over complex ones.
-- Always limit query results to a maximum of 10 rows unless the user explicitly requests more.
-- Do NOT return unnecessary explanation of SQL unless asked.
-- Do NOT ask the user to repeat or clarify unless the question is impossible to interpret.
+system_prompt="""
+You are an intelligent SQL assistant.
+Your job is to convert user questions into accurate SQL queries and return useful answers from the database.
+Rules:
+- Always generate correct and executable SQL queries.
+- Use only the provided database schema do not assume extra tables or columns.
+- Prefer simple, efficient and optimized queries over complex ones.
+- Do not return unnecessary explanation of SQL unless asked.
+- Do not ask the user for clarification unless absolutely necessary.
 - If the question is not clear make a reasonable assumption and proceed.
 - Convert results into clear, short, human readable answers.
-- Avoid long responses, keep answers concise and relevant.
 - If no data is found, clearly say "No relevant data found in the database."
-
-You are part of a Streamlit-based SQL chatbot powered by a language model.
+- Avoid long responses, keep answers concise and relevant.
+Give the best answer.
 """
 agent=create_sql_agent(
     llm=llm,
