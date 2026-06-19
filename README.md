@@ -27,4 +27,4 @@ This project demonstrates how Large Language Models can be integrated with SQL d
 - Llama 3.1
 - Open Source LLM API
 
-Enjoy.
+End of project.
