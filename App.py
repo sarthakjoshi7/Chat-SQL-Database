@@ -4,6 +4,7 @@ from pathlib import Path
 from langchain.agents import create_sql_agent
 from langchain.sql_database import SQLDatabase
 from langchain.agents.agent_types import AgentType
+from langchain_core.prompts import ChatPromptTemplate
 from langchain.callbacks import StreamlitCallbackHandler
 from langchain.agents.agent_toolkits import SQLDatabaseToolkit
 from urllib.parse import quote_plus
@@ -51,11 +52,25 @@ else:
     db=configure_db(db_uri)
 # Toolkit
 toolkit=SQLDatabaseToolkit(db=db,llm=llm)
+system_prompt = """
+You are an intelligent SQL assistant.
+Your job is to convert user questions into accurate SQL queries and return useful answers from the database.
+Rules:
+- Always generate correct and executable SQL queries.
+- Use ONLY the given database schema.
+- Prefer simple and efficient SQL queries.
+- Always limit results to 10 rows unless the user explicitly asks for more.
+- Do NOT ask the user for clarification unless absolutely necessary.
+- If unclear, make a reasonable assumption.
+- Return final answers in simple natural language.
+- Be concise.
+"""
 agent=create_sql_agent(
     llm=llm,
     toolkit=toolkit,
     verbose=True,
-    agent_type=AgentType.ZERO_SHOT_REACT_DESCRIPTION
+    agent_type=AgentType.ZERO_SHOT_REACT_DESCRIPTION,
+    prefix=system_prompt
 )
 if "messages" not in st.session_state or st.sidebar.button("Clear message history"):
     st.session_state["messages"]=[{"role":"assistant","content":"How can I help you?"}]
