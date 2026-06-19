@@ -1,9 +1,9 @@
 langchain==0.2.11
-streamlit
 langchain-core==0.2.43
 langchain-community==0.2.10
 langchain-text-splitters==0.2.2
 langchain-groq
 python-dotenv
+streamlit
 unstructured
 SQLAlchemy
