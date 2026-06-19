@@ -54,7 +54,7 @@ toolkit=SQLDatabaseToolkit(db=db,llm=llm)
 agent=create_sql_agent(
     llm=llm,
     toolkit=toolkit,
-    verbose=True,
+    verbose=False,
     agent_type=AgentType.ZERO_SHOT_REACT_DESCRIPTION
 )
 if "messages" not in st.session_state or st.sidebar.button("Clear message history"):
